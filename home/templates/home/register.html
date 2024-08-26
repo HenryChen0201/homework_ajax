@@ -1,0 +1,146 @@
+{% extends 'base.html' %} 
+{% block styles %}
+<style>
+
+</style>
+{% endblock %} 
+{% block content %}
+<form id="registerForm">
+    <div class="mb-3">
+        <label for="InputName" class="form-label">姓名</label>
+        <input type="text" class="form-control" id="InputName" name="name" />
+        <div id="nameHelp" class="alert alert-info mt-3"></div>
+    </div>
+    <div class="mb-3">
+        <label for="InputEmail" class="form-label">電子郵件</label>
+        <input type="email" class="form-control" id="InputEmail" name="email" />
+    </div>
+    <div class="mb-3">
+        <label for="Inputpassword" class="form-label">密碼</label>
+        <input
+            type="password"
+            class="form-control"
+            name="password"
+            id="Inputpassword"
+        />
+    </div>
+    <div class="mb-3">
+        <label for="Inputpassword1" class="form-label">密碼確認</label>
+        <input
+            type="password"
+            class="form-control"
+            name="password1"
+            id="Inputpassword1"
+        />
+    </div>
+    <div class="mb-3">
+        <label for="InputAge" class="form-label">年紀</label>
+        <input type="number" class="form-control" id="InputAge" name="age" />
+    </div>
+    <div class="mb-3">
+        <label for="formFile" class="form-label">頭像</label>
+        <input class="form-control" type="file" id="formFile" name="avatar" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="buttonSubmit">送出</button>
+    <!-- <button type="button" class="btn btn-primary" id="buttonSubmit1">送出</button> -->
+</form>
+<div id="div1" class="alert alert-info mt-3"></div>
+{% endblock %} 
+{% block scripts %}
+<script>
+    const btnSubmit = document.querySelector("#buttonSubmit");
+    // const btnSubmit1 = document.querySelector("#buttonSubmit1");
+    const inpName = document.querySelector("#InputName");
+    const inpEmail = document.querySelector("#InputEmail");
+    const inpAge = document.querySelector("#InputAge");
+    const inpPassword = document.querySelector("#Inputpassword");
+    const inpPassword1 = document.querySelector("#Inputpassword1");
+    const divInfo = document.querySelector("#div1");
+    const divName = document.querySelector("#nameHelp");
+
+    inpName.addEventListener("blur", async () => {
+        // divName.innerHTML = inpName.value
+        //將輸入的姓名傳到api去檢查帳號是否存在
+        //step1 call api fetch('/api/check_name/?name=Tom')
+        //step2 讀取資料
+        if (inpName.value) {
+            const response = await fetch(`/api/check_name/${inpName.value}`);
+            if (response.ok) {
+                const data = await response.text();
+                divName.innerHTML = data;
+            } else {
+                divName.innerHTML = "檢查帳號時發生錯誤";
+            }
+        } else {
+            divName.innerHTML = "請輸入名稱";
+        }
+    });
+
+    btnSubmit.addEventListener("click", async (event) => {
+        event.preventDefault()
+    //     // ajax
+    //     //  console.log(ˋ${inpName.value}-${inpEmail.value}-${inpAge.value}ˋ)
+    //     // console.log(inpName.value)
+    //     // const url = `/api/register/?name=${inpName.value}&email=${inpEmail.value}&age=${inpAge.value}&password=${inpPassword.value}`
+    //     // const response = await fetch(url)
+    //     // const data = await response.text()
+    //     // divInfo.innerHTML = data
+
+    //     //改用 FormData
+    //     //將表單輸入的資料塞進FormData物件中
+        const myForm = document.querySelector('#registerForm')
+        const formData = new FormData(myForm)
+
+        //讀取FormData中的資料
+        // for(const pair of formData.entries()){
+        //   console.log(pair[0])
+        //   console.log(pair[1])
+        // }
+
+        //透過fetch()將formData資料傳給API
+        const response = await fetch('/api/register/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+
+        const data = await response.text(); 
+        console.log(data)
+
+        if (data.includes('註冊成功')) {
+            divInfo.innerHTML = data;  
+            myForm.reset();  // 清空表單
+        } else {
+            divInfo.innerHTML = data;
+        }
+
+    });
+    // btnSubmit1.addEventListener('click',async()=>{
+    //     let user = {
+    //     "name": inpName.value, 
+    //     "email": inpEmail.value, 
+    //     "age": inpAge.value, 
+    //     "password": inpPassword.value, 
+    //     "password1": inpPassword1.value
+    // };
+    //     //  console.log(user)
+    //     user = JSON.stringify(user) //JSON物件轉成字串
+
+    //     const response = await fetch('/api/register1/',{
+    //         method:'POST',
+    //         body:user,
+    //         headers:{
+    //             'Content-Type':'application/json',
+    //             'X-CSRFToken':'{{ csrf_token }}'
+    //         }
+    //     })
+
+    //     const data = await response.text()
+    //     divInfo.innerHTML = data 
+    
+    // })
+</script>
+{% endblock %}

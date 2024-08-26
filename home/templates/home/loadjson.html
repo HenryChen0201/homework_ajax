@@ -1,0 +1,48 @@
+{% extends 'base.html'%} 
+{%load static%}
+{%block content%}
+<table id="table1" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>標題</th>
+            <th>分類</th>
+            <th>地址</th>
+            <th>MRT站</th>
+            <th>經度</th>
+            <th>緯度</th>
+            <th>圖片</th>
+            <th>描述</th>
+        </tr>
+    </thead>
+        
+    <tbody>
+    </tbody>
+</table>
+{%endblock%} 
+{%block styles%} 
+<style>
+
+
+</style>
+{%endblock%} 
+{%block scripts%}
+<script src="{% static 'scripts/travel.js'%}"></script>
+<script>
+    const eleTable = document.querySelector('#table1>tbody');
+
+    spots.CommonFormat.Section.forEach(item => {
+        let row = `<tr>
+                    <td>${item.stitle}</td>
+                    <td>${item.CAT1} / ${item.CAT2}</td>
+                    <td>${item.address}</td>
+                    <td>${item.MRT}</td>
+                    <td>${item.longitude}</td>
+                    <td>${item.latitude}</td>
+                    <td><img src="${item.file.img[0].text}" style="width: 250px"></td>
+                    <td class="description-cell">${item.xbody}</td>
+                    </tr>`;
+        eleTable.innerHTML += row;
+    });
+
+</script>
+{%endblock%}
